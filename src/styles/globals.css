@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: Lastik;
+    src: url('/lastik.woff2');
+    font-style: normal;
+    font-weight: 400;
+}
