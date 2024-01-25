@@ -8,6 +8,7 @@ import {
 } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
+import Logo from '@components/Logo';
 import { usePathname } from 'next/navigation';
 
 interface HeaderProps {}
@@ -17,7 +18,7 @@ const buttonVars = {
     scale: 1,
   },
   tap: {
-    scale: 0.9,
+    scale: 0.8,
   },
 };
 
@@ -90,7 +91,9 @@ export default function Header({}: HeaderProps) {
       }
     >
       <div className='flex h-16 items-center justify-between'>
-        <Link href='/'>Logo</Link>
+        <Link href='/' className='text-primary'>
+          <Logo />
+        </Link>
         <m.button
           className='-mr-3 flex size-12 flex-col items-center justify-center gap-[6px]'
           variants={buttonVars}
@@ -110,24 +113,27 @@ export default function Header({}: HeaderProps) {
             <ul className='flex flex-col gap-6 text-end font-serif text-4xl'>
               <li>
                 <Link
-                  href='#'
+                  onClick={() => toggleNavOpen()}
+                  href='/'
                   className={pathname === '/' ? 'text-purple-500' : ''}
                 >
                   <sup>5</sup>Timeline
                 </Link>
               </li>
               <li>
-                <Link href='#'>
+                <Link href='/works' onClick={() => toggleNavOpen()}>
                   <sup>3</sup>Works
                 </Link>
               </li>
               <li>
-                <Link href='#'>
-                  <sup>8</sup>Writing
+                <Link href='/thoughts' onClick={() => toggleNavOpen()}>
+                  <sup>8</sup>Thoughts
                 </Link>
               </li>
               <li>
-                <Link href='#'>About me</Link>
+                <Link href='/about' onClick={() => toggleNavOpen()}>
+                  About me
+                </Link>
               </li>
             </ul>
             <div className='flex flex-col gap-4'>
