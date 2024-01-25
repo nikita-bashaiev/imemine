@@ -72,7 +72,7 @@ export default function Header({}: HeaderProps) {
 
   return (
     <m.header
-      className='col-full grid-cols-content bg-surface border-primary/10 fixed inset-x-0 top-0 grid overflow-clip border-b'
+      className='col-full grid-cols-content bg-surface/85 border-primary/10 fixed inset-x-0 top-0 grid overflow-clip border-b backdrop-blur'
       variants={{
         hidden: { y: '-100%' },
         visible: { y: '0' },
@@ -121,17 +121,29 @@ export default function Header({}: HeaderProps) {
                 </Link>
               </li>
               <li>
-                <Link href='/works' onClick={() => toggleNavOpen()}>
+                <Link
+                  href='/works'
+                  onClick={() => toggleNavOpen()}
+                  className={pathname === '/works' ? 'text-purple-500' : ''}
+                >
                   <sup>3</sup>Works
                 </Link>
               </li>
               <li>
-                <Link href='/thoughts' onClick={() => toggleNavOpen()}>
+                <Link
+                  href='/thoughts'
+                  onClick={() => toggleNavOpen()}
+                  className={pathname === '/thoughts' ? 'text-purple-500' : ''}
+                >
                   <sup>8</sup>Thoughts
                 </Link>
               </li>
               <li>
-                <Link href='/about' onClick={() => toggleNavOpen()}>
+                <Link
+                  href='/about'
+                  onClick={() => toggleNavOpen()}
+                  className={pathname === '/about' ? 'text-purple-500' : ''}
+                >
                   About me
                 </Link>
               </li>
