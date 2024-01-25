@@ -3,8 +3,54 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: Lastik;
-    src: url('/lastik.woff2');
-    font-style: normal;
-    font-weight: 400;
+  font-family: 'Lastik';
+  src: url('/lastik.woff2');
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  /* content grid */
+  --padding-inline: 1.25rem;
+  --text-max-width: 80ch;
+  --normal-max-width: 80rem;
+  --normal-size: calc((var(--normal-max-width) - var(--text-max-width)) / 2);
+
+  --grid-columns-content: [full-start] minmax(var(--padding-inline), 1fr)
+    [normal-start] minmax(0, var(--normal-size)) [text-start]
+    min(100% - (var(--padding-inline) * 2), var(--text-max-width)) [text-end]
+    minmax(0, var(--normal-size)) [normal-end]
+    minmax(var(--padding-inline), 1fr) [full-end];
+
+  /* fonts */
+  --font-serif: 'Lastik', serif;
+
+  /* colours */
+  --color-primary: 30% 0 0;
+  --color-secondary: 45% 0 0;
+  --color-tertiary: 60% 0 0;
+  --color-surface: 96% 0 0;
+}
+
+.dark {
+  --color-primary: 90% 0 0;
+  --color-secondary: 75% 0 0;
+  --color-tertiary: 60% 0 0;
+  --color-surface: 20% 0 0;
+}
+
+@screen md {
+  :root {
+    --padding-inline: 2.5rem;
+  }
+}
+
+@screen lg {
+  :root {
+    --padding-inline: 7rem;
+  }
+}
+
+.grid-cols-content > :not(.col-normal, .col-full) {
+  grid-column: text;
 }

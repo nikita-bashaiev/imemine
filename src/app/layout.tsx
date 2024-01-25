@@ -15,8 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={GeistSans.className}>
-        {' '}
+      <body
+        className={`${GeistSans.className} bg-surface text-secondary grid-cols-content grid`}
+      >
         <Header />
         {children}
       </body>
