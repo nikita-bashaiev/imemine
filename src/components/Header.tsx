@@ -1,17 +1,18 @@
 'use client';
+
 import {
   motion as m,
   AnimatePresence,
-  useCycle,
   useScroll,
   useMotionValueEvent,
 } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
-import Logo from '@components/Logo';
 import { usePathname } from 'next/navigation';
-
-interface HeaderProps {}
+import { Icon } from '@iconify/react';
+import clsx from 'clsx';
+import Logo from '@components/Logo';
+import { socialLinks, pages } from '@lib/data';
 
 const buttonVars = {
   rest: {
@@ -22,7 +23,7 @@ const buttonVars = {
   },
 };
 
-const firstBarVars = {
+const commonBarVars = {
   rest: {
     backgroundColor: 'oklch(var(--color-tertiary))',
   },
@@ -33,6 +34,10 @@ const firstBarVars = {
     rotate: '0deg',
     translateY: '0px',
   },
+};
+
+const firstBarVars = {
+  ...commonBarVars,
   open: {
     rotate: '-45deg',
     translateY: '4px',
@@ -40,66 +45,83 @@ const firstBarVars = {
 };
 
 const secondBarVars = {
-  rest: {
-    backgroundColor: 'oklch(var(--color-tertiary))',
-  },
-  hover: {
-    backgroundColor: 'oklch(var(--color-primary))',
-  },
-  closed: {
-    rotate: '0deg',
-    y: '0px',
-  },
+  ...commonBarVars,
   open: {
     rotate: '45deg',
     y: '-4px',
   },
 };
 
-export default function Header({}: HeaderProps) {
+export interface SocialLinkProps extends React.AllHTMLAttributes<'a'> {
+  icon: string;
+  text: string;
+  featured?: boolean;
+}
+
+function SocialLink({ href, icon, text, featured }: SocialLinkProps) {
+  return (
+    <m.a
+      initial={{ backgroundColor: 'oklch(var(--color-primary))' }}
+      whileHover={{ backgroundColor: 'oklch(var(--color-secondary))' }}
+      href={href}
+      target='_blank'
+      className={clsx(
+        'text-surface relative grid place-content-center',
+        featured && 'row-span-2',
+      )}
+    >
+      {text}
+      <Icon
+        icon={icon}
+        className={clsx('absolute opacity-10', {
+          '-bottom-4 -right-4 text-9xl': featured,
+          '-bottom-2 -right-2 text-6xl': !featured,
+        })}
+      />
+    </m.a>
+  );
+}
+
+export default function Header() {
   const { scrollY } = useScroll();
+  const pathname = usePathname();
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [navOpen, setNavOpen] = useState(false);
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious();
-    if (previous && latest > previous && latest > 150) {
+    if (!navOpen && previous && latest > previous && latest > 150) {
       setHeaderVisible(false);
     } else {
       setHeaderVisible(true);
     }
   });
-  const [navOpen, toggleNavOpen] = useCycle(false, true);
-  const pathname = usePathname();
 
   return (
     <m.header
-      className='col-full grid-cols-content bg-surface/85 border-primary/10 fixed inset-x-0 top-0 grid overflow-clip border-b backdrop-blur'
+      className='col-full grid-cols-content bg-surface/85 border-primary/10 fixed inset-x-0 top-0 grid h-16 border-b backdrop-blur'
       variants={{
         hidden: { y: '-100%' },
         visible: { y: '0' },
-        closed: {
-          height: '4rem',
-          gridTemplateRows: '1fr',
-        },
-        open: {
-          height: '100svh',
-          gridTemplateRows: '4rem 1fr',
-        },
       }}
       initial='closed'
-      animate={
-        navOpen ? 'open' : 'closed' && headerVisible ? 'visible' : 'hidden'
-      }
+      animate={headerVisible ? 'visible' : 'hidden'}
     >
       <div className='flex h-16 items-center justify-between'>
-        <Link href='/' className='text-primary'>
-          <Logo />
-        </Link>
+        <m.div
+          initial={{ scale: 1 }}
+          whileTap={{ scale: 0.8 }}
+          onClick={() => setNavOpen(false)}
+        >
+          <Link href='/' className='text-primary'>
+            <Logo />
+          </Link>
+        </m.div>
         <m.button
           className='-mr-3 flex size-12 flex-col items-center justify-center gap-[6px]'
           variants={buttonVars}
           initial='rest'
           animate={navOpen ? 'open' : 'closed'}
-          onClick={() => toggleNavOpen()}
+          onClick={() => setNavOpen(!navOpen)}
           whileHover='hover'
           whileTap='tap'
         >
@@ -109,70 +131,45 @@ export default function Header({}: HeaderProps) {
       </div>
       <AnimatePresence>
         {navOpen && (
-          <nav className='flex h-full flex-col justify-between pb-6 pt-8'>
-            <ul className='flex flex-col gap-6 text-end font-serif text-4xl'>
-              <li>
-                <Link
-                  onClick={() => toggleNavOpen()}
-                  href='/'
-                  className={pathname === '/' ? 'text-purple-500' : ''}
+          <m.nav
+            className='border-primary/10 bg-surface/85 flex h-full flex-col justify-between overflow-clip border-b backdrop-blur'
+            initial='closed'
+            exit='closed'
+            animate='open'
+            variants={{
+              closed: { height: 0 },
+              open: { height: 'calc(100svh - 4rem)' },
+            }}
+          >
+            <ul className='flex flex-col gap-6 pt-8 text-end font-serif text-4xl'>
+              {pages.map(({ href, text, count }) => (
+                <m.li
+                  key={text}
+                  initial={{
+                    color:
+                      pathname === href
+                        ? 'oklch(var(--color-primary))'
+                        : 'oklch(var(--color-tertiary))',
+                  }}
+                  whileHover={{ color: 'oklch(var(--color-secondary))' }}
                 >
-                  <sup>5</sup>Timeline
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/works'
-                  onClick={() => toggleNavOpen()}
-                  className={pathname === '/works' ? 'text-purple-500' : ''}
-                >
-                  <sup>3</sup>Works
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/thoughts'
-                  onClick={() => toggleNavOpen()}
-                  className={pathname === '/thoughts' ? 'text-purple-500' : ''}
-                >
-                  <sup>8</sup>Thoughts
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/about'
-                  onClick={() => toggleNavOpen()}
-                  className={pathname === '/about' ? 'text-purple-500' : ''}
-                >
-                  About me
-                </Link>
-              </li>
+                  <Link onClick={() => setNavOpen(false)} href={href}>
+                    <sup>{count}</sup>
+                    {text}
+                  </Link>
+                </m.li>
+              ))}
             </ul>
-            <div className='flex flex-col gap-4'>
-              <span>Connect with me</span>
+            <div className='flex flex-col gap-4 pb-6'>
               <hr className='border-primary/10 border-dashed' />
+              <span className='text-tertiary'>Connect with me</span>
               <div className='grid h-40 grid-cols-2 grid-rows-2 gap-2'>
-                <Link
-                  href='#'
-                  className='bg-primary text-surface row-span-2 grid place-content-center'
-                >
-                  Email
-                </Link>
-                <Link
-                  href='#'
-                  className='bg-primary text-surface grid place-content-center'
-                >
-                  X/Twitter
-                </Link>
-                <Link
-                  href='#'
-                  className='bg-primary text-surface grid place-content-center'
-                >
-                  ?
-                </Link>
+                {socialLinks.map((link) => (
+                  <SocialLink {...link} key={link.text} />
+                ))}
               </div>
             </div>
-          </nav>
+          </m.nav>
         )}
       </AnimatePresence>
     </m.header>
